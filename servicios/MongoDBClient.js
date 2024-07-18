@@ -180,13 +180,39 @@ class MongoDBClient {
      */
 
     async consulta3(cantidadDePlataformas){
-        /**
-        >>>>>>>>>>>>>>>>>>>>>>>>
-        CODIGO AQUI
-        >>>>>>>>>>>>>>>>>>>>>>>>
-        */
-        return []
+        try {
+            // Obtener la colección de videojuegos
+        const videojuegosCollection = this.db.collection('Videojuego');
 
+        // Realizar la agregación para encontrar videojuegos con más de n plataformas y unir con la colección de plataformas
+        const resultados = await videojuegosCollection.aggregate([
+            {
+                $match: {
+                    platforms: { $exists: true, $type: 'array', $gt: { $size: cantidadDePlataformas } }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'Plataforma', // Colección a unir
+                    localField: 'platforms', // Campo local (array de IDs de plataformas en Videojuego)
+                    foreignField: 'id', // Campo en la colección Plataforma
+                    as: 'plataformaDet' // Nombre del nuevo campo que contendrá los documentos de Plataforma
+                }
+            },
+            {
+                $project: {
+                    name: 1,
+                    platforms: '$plataformaDet.name' // Proyectar solo los nombres de las plataformas
+                }
+            }
+        ]).toArray();
+
+        // Devolver los resultados encontrados
+        return resultados;
+        } catch (error) {
+            console.error('Error en la consulta 3:', error);
+            return [];
+        }
     }
 
     /**
@@ -225,13 +251,22 @@ class MongoDBClient {
      */
 
     async consulta6(etiquetas){
-        /**
-        >>>>>>>>>>>>>>>>>>>>>>>>
-        CODIGO AQUI
-        >>>>>>>>>>>>>>>>>>>>>>>>
-        */
-        return []
-
+        try {
+            // Obtener la colección de videojuegos
+            const videojuegosCollection = this.db.collection('Videojuego');
+            
+            // Realizar la consulta para encontrar videojuegos con las etiquetas específicas y ordenarlos por fecha de lanzamiento
+            const resultados = await videojuegosCollection.find({
+                themes: { $all: etiquetas } // Buscar juegos que tengan todas las etiquetas proporcionadas
+            }).sort({ original_release_date: -1 }) // Ordenar por fecha de lanzamiento de más reciente a más antiguo
+            .toArray();
+            
+            return resultados;
+        } catch (error) {
+            // Manejo de errores
+            console.error('Error en la consulta 6:', error);
+            return [];
+        }
     }
 
     /**
@@ -255,13 +290,21 @@ class MongoDBClient {
      */
 
     async consulta8(palabra){
-        /**
-        >>>>>>>>>>>>>>>>>>>>>>>>
-        CODIGO AQUI
-        >>>>>>>>>>>>>>>>>>>>>>>>
-        */
-        return []
-
+        try {
+            // Obtener la colección de videojuegos
+            const videojuegosCollection = this.db.collection('Videojuego');
+        
+            // Realizar la consulta para encontrar videojuegos cuyo nombre contenga la palabra clave
+            const resultados = await videojuegosCollection.find({
+                name: { $regex: palabra, $options: 'i' } // Buscar juegos cuyo nombre contenga la palabra clave, ignorando mayúsculas y minúsculas
+            }).toArray();
+            
+            return resultados;
+        } catch (error) {
+            // Manejo de errores
+            console.error('Error en la consulta 8:', error);
+            return [];
+        }
     }
 
     /**
