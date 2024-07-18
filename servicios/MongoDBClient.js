@@ -124,12 +124,19 @@ class MongoDBClient {
      */
 
     async consulta1(generos){
-        /**
-        >>>>>>>>>>>>>>>>>>>>>>>>
-        CODIGO AQUI
-        >>>>>>>>>>>>>>>>>>>>>>>>
-        */
-       return []
+        try {
+            const VideojuegoCollection = this.db.collection('Videojuego');
+            // Buscar videojuegos que contengan todos los géneros especificados
+            const resultados = await VideojuegoCollection.find({
+                genres: { $all: generos }
+            }).toArray();
+            
+            return resultados;
+        } catch (error) {
+            console.error('Error en la consulta 1:', error);
+            return [];
+        }
+    
     }
 
     /**
@@ -138,12 +145,32 @@ class MongoDBClient {
      */
 
     async consulta2(empresas, fechaInicio, fechaFin){
-        /**
-        >>>>>>>>>>>>>>>>>>>>>>>>
-        CODIGO AQUI
-        >>>>>>>>>>>>>>>>>>>>>>>>
-        */
-        return []
+        try {
+            const empresaCollection = this.db.collection('Empresa');
+        
+            // Obtener los IDs de las empresas a partir de sus nombres
+            const empresasName = await empresaCollection.find({
+                name: { $in: empresas } // Buscar empresas cuyos nombres están en la lista proporcionada
+            }).toArray();
+            
+            // Extraer los IDs de las empresas encontradas
+            const idsEmpresas = empresasName.map(empresa => empresa.id);
+    
+            // Obtener la colección de videojuegos
+            const videojuegoCollection = this.db.collection('Videojuego');
+            
+            // Buscar videojuegos dentro del rango de fechas y de las empresas especificadas
+            const resultados = await videojuegoCollection.find({
+                original_release_date: { $gte: fechaInicio, $lte: fechaFin }, // Filtra por rango de fechas
+                developers: { $in: idsEmpresas } // Filtra por IDs de empresas
+            }).toArray();
+            
+            // Devolver los resultados encontrados
+            return resultados;
+        } catch (error) {
+            console.error('Error en la consulta 2:', error);
+            return [];
+        }
 
     }
 
