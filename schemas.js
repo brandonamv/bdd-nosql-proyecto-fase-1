@@ -44,7 +44,7 @@ const Producto = mongoose.model('Producto', productoSchema);
  * @property {String[]} genres - Generos.
  * @property {String[]} themes - Etiquetas.
  * @property {Number[]} platforms - Plataformas.
- * @property {Number[]} publishers - Empresas creadoras.
+ * @property {Number[]} developers - Empresas creadoras.
  */
 const videojuegoSchema = new mongoose.Schema({
   // Define las estructura de los documentos videojuegos aqui
@@ -55,7 +55,7 @@ const videojuegoSchema = new mongoose.Schema({
   genres: [String],
   themes: [String],
   platforms:[Number],
-  publishers: [Number],
+  developers: [Number],
 });
 
 /**

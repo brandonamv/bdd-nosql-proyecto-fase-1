@@ -91,6 +91,31 @@ class MongoDBClient {
         CODIGO AQUI
         >>>>>>>>>>>>>>>>>>>>>>>>
         */
+        try {
+            const collection = this.db.collection(coleccion);
+            const result = await collection.insertMany(model);
+            console.log(`Documentos insertados con éxito en la colección ${coleccion}:`, result.insertedId);
+        } catch (error) {
+            console.error(`Error al insertar el documento en la colección ${coleccion}:`, error);
+        }
+    }
+
+    async update(coleccion,model){
+        try {
+            const collection = this.db.collection(coleccion);
+            const result = await collection.updateOne(
+                {
+                    id:model.id
+                },
+                {
+                    $push:{
+                        games:model.data
+                    }
+                });
+            console.log(`Documento actualizado con éxito en la colección ${coleccion}:`, result.insertedId);
+        } catch (error) {
+            console.error(`Error al insertar el documento en la colección ${coleccion}:`, error);
+        }
     }
 
     /**
