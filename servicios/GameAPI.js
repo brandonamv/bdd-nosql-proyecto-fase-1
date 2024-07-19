@@ -8,13 +8,14 @@ class GameAPI {
         this.pageSize = pageSize;
     }
 
-    async obtenerListaDeJuegos() {
+    async obtenerListaDeJuegos(page) {
         let allGames = [];
-        let currentPage = 1;
+        let currentPage = page;
 
         const response = await axios.get(`https://www.giantbomb.com/api/games/?api_key=`+this.apiKey, {
             params: {
-                format: 'json' // Request JSON response format
+                format: 'json', // Request JSON response format
+                offset: currentPage
               }
         });
         console.log(response.data.results);
@@ -24,10 +25,9 @@ class GameAPI {
     }
     async obtenerJuego(id) {
         let game;
-        let currentPage = 1;
         const response = await axios.get(`https://www.giantbomb.com/api/game/`+id+`/?api_key=`+this.apiKey, {
             params: {
-                format: 'json' // Request JSON response format
+                format: 'json', // Request JSON response format
                 }
         });
         console.log(response.data.results);
@@ -36,13 +36,14 @@ class GameAPI {
         
         
     }
-    async obtenerListaPlataformas() {
+    async obtenerListaPlataformas(page) {
         let allPlatforms = [];
-        let currentPage = 1;
+        let currentPage = page;
 
         const response = await axios.get(`https://www.giantbomb.com/api/platforms/?api_key=`+this.apiKey, {
             params: {
-                format: 'json' // Request JSON response format
+                format: 'json', // Request JSON response format
+                offset: currentPage
               }
         });
         console.log(response.data.results);
@@ -50,21 +51,22 @@ class GameAPI {
         return allPlatforms;
         
     }
-    async obtenerListaEmpresas() {
+
+    async obtenerListaEmpresas(page) {
         let allCompanies = [];
-        let currentPage = 1;
+        let currentPage = page;
 
         const response = await axios.get(`https://www.giantbomb.com/api/companies/?api_key=`+this.apiKey, {
             params: {
-                format: 'json' // Request JSON response format
-                
+                format: 'json', // Request JSON response format
+                offset: currentPage
               }
         });
         console.log(response.data.results);
         allCompanies=response.data.results;
         return allCompanies;
-        
     }
+
 }
 
 module.exports = GameAPI;

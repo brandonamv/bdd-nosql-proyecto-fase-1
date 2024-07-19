@@ -42,7 +42,8 @@ const GameAPI = require('./servicios/GameAPI');
     // >>>>>>>>>>>>
 
     const empresasInsert=[];
-    await gameAPI.obtenerListaEmpresas().then((res)=>{
+    const empresas= await mongoClient.consulta('Empresa');
+    await gameAPI.obtenerListaEmpresas(empresas.length).then((res)=>{
         console.log(res);
         res.forEach(empresa => {
             const nuevaEmpresa = new Empresa({
@@ -53,11 +54,14 @@ const GameAPI = require('./servicios/GameAPI');
         });
         
     });
-
-    await mongoClient.insertartVarios('Empresa',empresasInsert);
+    if (empresasInsert.length>0) {
+        await mongoClient.insertartVarios('Empresa',empresasInsert);
+    }
+    
 
     const plataformasInsert=[];
-    await gameAPI.obtenerListaPlataformas().then((res)=>{
+    const plataformas= await mongoClient.consulta('Plataforma');
+    await gameAPI.obtenerListaPlataformas(plataformas.length).then((res)=>{
         console.log(res);
         res.forEach(plataforma => {
             const nuevaPlataforma = new Plataforma({
@@ -69,12 +73,16 @@ const GameAPI = require('./servicios/GameAPI');
         
     });
 
+    if (plataformasInsert.length>0) {
+        await mongoClient.insertartVarios('Plataforma',plataformasInsert);
+    }
+
+    
     
 
-    await mongoClient.insertartVarios('Plataforma',plataformasInsert);
-
     const gamesInsert=[];
-    await gameAPI.obtenerListaDeJuegos().then(async (res)=>{
+    const games= await mongoClient.consulta('Videojuego');
+    await gameAPI.obtenerListaDeJuegos(games.length).then(async (res)=>{
         // let i=0;
         // while (i<res.length) {
         //     setTimeout((game) => {
@@ -87,48 +95,51 @@ const GameAPI = require('./servicios/GameAPI');
         let count = 0;
         const intervalId = setInterval(async () => {
             count++;
-            await gameAPI.obtenerJuego(res[count].id).then(async (resp)=>{
-                console.log(resp);
-                const genres=[];
-                const platforms=[];
-                const themes=[];
-                const developers=[];
-                if (resp.platforms) {
-                    resp.platforms.forEach(async (p)=>{
-                        await mongoClient.update('Plataforma',{id:p.id,data:resp.id});
-                        platforms.push(p.id);
+            if (res[count]) {
+                await gameAPI.obtenerJuego(res[count].id).then(async (resp)=>{
+                    console.log(resp);
+                    const genres=[];
+                    const platforms=[];
+                    const themes=[];
+                    const developers=[];
+                    if (resp.platforms) {
+                        resp.platforms.forEach(async (p)=>{
+                            await mongoClient.update('Plataforma',{id:p.id,data:resp.id});
+                            platforms.push(p.id);
+                        });
+                    }
+                    if (resp.genres) {
+                        resp.genres.forEach((p)=>{
+                            genres.push(p.name);
+                        });
+                    }
+                    if (resp.developers) {
+                        resp.developers.forEach(async (p)=>{
+                            await mongoClient.update('Empresa',{id:p.id,data:resp.id});
+                            developers.push(p.id);
+                        });
+                    }
+                    if (resp.themes) {
+                        resp.themes.forEach((p)=>{
+                            themes.push(p.name);
+                        });
+                    }
+    
+                    const nuevoJuego= new Videojuego({
+                        id: resp.id,
+                        name: resp.name,
+                        original_release_date: resp.original_release_date,
+                        original_game_rating:Math.random()*10,
+                        genres: genres,
+                        themes: themes,
+                        platforms:platforms,
+                        developers: developers,
                     });
-                }
-                if (resp.genres) {
-                    resp.genres.forEach((p)=>{
-                        genres.push(p.name);
-                    });
-                }
-                if (resp.developers) {
-                    resp.developers.forEach(async (p)=>{
-                        await mongoClient.update('Empresa',{id:p.id,data:resp.id});
-                        developers.push(p.id);
-                    });
-                }
-                if (resp.themes) {
-                    resp.themes.forEach((p)=>{
-                        themes.push(p.name);
-                    });
-                }
-
-                const nuevoJuego= new Videojuego({
-                    id: resp.id,
-                    name: resp.name,
-                    original_release_date: resp.original_release_date,
-                    original_game_rating:resp.original_game_rating,
-                    genres: genres,
-                    themes: themes,
-                    platforms:platforms,
-                    developers: developers,
+                    await mongoClient.insertar('Videojuego',nuevoJuego);
+                    gamesInsert.push(nuevoJuego);
                 });
-                await mongoClient.insertar('Videojuego',nuevoJuego);
-                gamesInsert.push(nuevoJuego);
-            });
+            }
+            
             if (count >= 100) {
                 console.log(gamesInsert);
                 
@@ -140,9 +151,6 @@ const GameAPI = require('./servicios/GameAPI');
     });
     
 
-    
-
-    // await mongoClient.insertartVarios('Plataforma',plataformasInsert);
 
     // >>>>>>>>>>>>
 
