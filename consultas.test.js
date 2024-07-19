@@ -63,7 +63,7 @@ describe('Consultas', () => {
 
     test('Consulta 6: Retorna juegos con etiquetas específicas y ordenados por fecha de lanzamientos', async () => {
         const etiquetas = []; // Agregar empresas a esta lista, por ejemplo ['Multiplayer', 'Singleplayer']
-        const result = await client.consulta8(etiquetas); 
+        const result = await client.consulta6(etiquetas); 
         console.info('Consulta 6: ', result)
         expect(result).toBeInstanceOf(Array); 
         expect(result).not.toEqual([]);
@@ -97,7 +97,7 @@ describe('Consultas', () => {
     test('Consulta 10: Retorna juegos por géneros y plataformas con proyección de campos', async () => {
         const generos = []; // Agregar generos a esta lista, por ejemplo ['Action', 'Adventure', 'FPS']
         const plataformas = []; // Agregar empresas a esta lista, por ejemplo ['Nintendo', 'Activision', 'EA']
-        const result = await client.consulta9(generos, plataformas); 
+        const result = await client.consulta10(generos, plataformas); 
         console.info('Consulta 10: ', result)
         expect(result).toBeInstanceOf(Array); 
         expect(result).not.toEqual([]);
