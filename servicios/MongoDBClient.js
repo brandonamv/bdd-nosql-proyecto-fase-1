@@ -298,7 +298,7 @@ class MongoDBClient {
                 return { totalJuegos: 0, sumaValoraciones: 0 };
             }
     
-            return resultados[0];
+            return resultados;
         } catch (error) {
             console.error('Error en la consulta 4:', error);
             return { totalJuegos: 0, sumaValoraciones: 0 };
@@ -360,7 +360,7 @@ class MongoDBClient {
             // Encontrar videojuegos con las etiquetas específicas
             const resultados = await videojuegosCollection.find({
                 themes: { $all: etiquetas } 
-            }).sort({ original_release_date: -1 }) 
+            }).sort({ original_release_date: -1 }).toArray(); 
             
             return resultados;
         } catch (error) {
