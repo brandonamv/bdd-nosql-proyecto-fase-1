@@ -104,8 +104,9 @@ const GameAPI = require('./servicios/GameAPI');
                     const developers=[];
                     if (resp.platforms) {
                         resp.platforms.forEach(async (p)=>{
-                            await mongoClient.update('Plataforma',{id:p.id,data:resp.id});
                             platforms.push(p.id);
+                            await mongoClient.update('Plataforma',{id:p.id,data:resp.id});
+                            
                         });
                     }
                     if (resp.genres) {
@@ -115,8 +116,9 @@ const GameAPI = require('./servicios/GameAPI');
                     }
                     if (resp.developers) {
                         resp.developers.forEach(async (p)=>{
-                            await mongoClient.update('Empresa',{id:p.id,data:resp.id});
                             developers.push(p.id);
+                            await mongoClient.update('Empresa',{id:p.id,data:resp.id});
+                            
                         });
                     }
                     if (resp.themes) {
@@ -149,8 +151,9 @@ const GameAPI = require('./servicios/GameAPI');
         }, 1000);
         
     });
-    
 
+    
+    // await mongoClient.close();
 
     // >>>>>>>>>>>>
 
